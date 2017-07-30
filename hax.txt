@@ -1,0 +1,97 @@
+72 65 73 6F 75 72 63 65 5F 74 72 65 65 73 2F 74 31 5F 74 72 65 65 5F 62 75 73 68 00 D8 42 EC 03 19 00 00 00 BC 42 EC 03 4C 43 EC 03 00 00 00 00 00 00 00 00 00 00 00 00 FC 42 EC 03 32 00 00 00 90 42 EC 03 40 44 EC 03 B0 43 EC 03 70 43 EC 03 1B 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 1B 00 00 00 42 00 00 00 66 4A 01 00 01 00 EC 03 19 00 00 00 FC 42 EC 03 8C 43 EC 03 00 00 00 00 00 00 00 00 00 00 00 00 4C 43 EC 03 22 00 00 00
+72 65 73 6F 75 72 63 65 5F 74 72 65 65 73 2F 74 31 5F 74 72 65 65 5F 62 75 73 68 00 68 43 EC 03 19 00 00 00 4C 43 EC 03 DC 43 EC 03 00 00 00 00 00 00 00 00 00 00 00 00 8C 43 EC 03 32 00 00 00 60 E5 5F 03 20 43 EC 03 60 E5 5F 03 00 44 EC 03 1B 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 1B 00 00 00 42 00 00 00 68 4A 01 00 01 00 EC 03 19 00 00 00 8C 43 EC 03 1C 44 EC 03 00 00 00 00 00 00 00 00 00 00 00 00 DC 43 EC 03 22 00 00 00
+resource_trees/t1_tree_bush
+
+0 4 8 c 10 14 18 1c 20
+
+0x98 byte item cache
++78 x
++7C y
++4 float 1
++c int 100M
++34 int 10M
++3c int 10M
++44 float -100
++48 int 10
++4c int 2
++5c huge int Pointer (also list of items?, my ptr?, base for offset to change #items left)
++68 onscreen text related
++6c int 6402(birch) 5862(chestnut) 6426(birch) unique id?
++78 float y value
++7C float x value
++84 onscreen text related
++88 int pointer
++90 int pointer (important maybe root?) cloth cotton flax:2BD36C60 tree birch chest:2BD36DC0
++94 int ptr to spawn possibilities
++c4 gathers left
++c8 tier of resource
++d4 items left
++dc max items
++e4 items left
+
+
+iTargetId long
+gametimestamp
+
+isHarvesting
+
+AbilityPower = 3,
+AbilityPowerBonus = 4,
+AttackDamage = 0,
+AttackRange = 0x2d,
+AttackRangeBonus = 0x2e,
+AttackSpeed = 0x1d,
+AttackSpeedBonus = 0x2f,
+BonusCCDurationVsMobs = 0x2c,
+BonusCCDurationVsPlayers = 40,
+BonusCCRVsMobs = 0x2b,
+BonusCCRVsPlayers = 0x27,
+BonusDamageVsMobs = 0x29,
+BonusDamageVsPlayers = 0x25,
+BonusDefenseVsMobs = 0x2a,
+BonusDefenseVsPlayers = 0x26,
+CraftingFocusCostReduction = 0x31,
+CraftingFocusMax = 0x11,
+CraftingFocusMaxBonus = 0x12,
+CraftingFocusRegeneration = 0x13,
+CraftingFocusRegenerationBonus = 20,
+CraftingQuality = 0x30,
+CraftTime = 0x22,
+CrowdControlResistance = 0x1b,
+DamagePerSecond = 30,
+EnergyCostReduction = 0x15,
+EnergyMax = 13,
+EnergyMaxBonus = 14,
+EnergyRegeneration = 15,
+EnergyRegenerationBonus = 0x10,
+FocusFireModifier = 50,
+FocusFireProtectionPenetration = 0x33,
+GallopMoveSpeedBonus = 0x1a,
+GatheringSpeed = 0x23,
+GatheringYield = 0x24,
+HealBonus = 0x17,
+HealModifier = 0x16,
+HitpointsMax = 9,
+HitpointsMaxBonus = 10,
+HitpointsRegeneration = 11,
+HitpointsRegenerationBonus = 12,
+InstallTime = 0x21,
+Invalid = 0x3a,
+ItemPower = 0x36,
+ItemPowerAverage = 0x37,
+MagicAttackDamageBonus = 2,
+MagicCastingResilience = 0x34,
+MagicCastTimeReduction = 0x1c,
+MagicCoolDownReduction = 0x1f,
+MagicResistance = 7,
+MagicSpellDamageBonus = 6,
+MaxLoad = 0x20,
+MoveSpeed = 0x18,
+MoveSpeedBonus = 0x19,
+NumAttributes = 0x3a,
+PhysicalArmor = 8,
+PhysicalAttackDamageBonus = 1,
+PhysicalSpellDamageBonus = 5,
+Reputation = 0x38,
+ReputationChange = 0x39,
+ThreatBonus = 0x35
