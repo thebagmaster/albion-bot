@@ -23,12 +23,17 @@ resource_trees/t1_tree_bush
 +88 int pointer
 +90 int pointer (important maybe root?) cloth cotton flax:2BD36C60 tree birch chest:2BD36DC0
 +94 int ptr to spawn possibilities
++d0 int rare
 +c4 gathers left
 +c8 tier of resource
 +d4 items left
 +dc max items
 +e4 items left
 
+mob
++44 int ptr health
++48 int ptr
++58 int rare
 
 iTargetId long
 gametimestamp

@@ -14,6 +14,8 @@ WriteProcessMemory = windll.kernel32.WriteProcessMemory
 CloseHandle = windll.kernel32.CloseHandle
 CreateToolhelp32Snapshot= windll.kernel32.CreateToolhelp32Snapshot
 Module32First = windll.kernel32.Module32First
+Module32Next = windll.kernel32.Module32Next
+Thread32Next = windll.kernel32.Thread32Next
 
 
 SYNCHRONIZE = 0x00100000;
@@ -41,32 +43,29 @@ class MODULEENTRY32(Structure):
 
 def GetBaseAddress(pid):
     TH32CS_SNAPMODULE = 0x00000008
-    ProcessID=pid
     hModuleSnap = DWORD
     me32 = MODULEENTRY32()
     me32.dwSize = sizeof( MODULEENTRY32 )
     #me32.dwSize = 5000
-    hModuleSnap = CreateToolhelp32Snapshot( TH32CS_SNAPMODULE, ProcessID )
+    hModuleSnap = CreateToolhelp32Snapshot( TH32CS_SNAPMODULE, pid )
     ret = Module32First( hModuleSnap, pointer(me32) )
     if ret == 0 :
         print('ListProcessModules() Error on Module32First[%d]' % GetLastError())
         CloseHandle( hModuleSnap )
-    global PROGMainBase
-    PROGMainBase=False
     return ctypes.addressof(me32.modBaseAddr.contents) # Get the base address of first module since this is the RocketLeague.exe one
 
 BASE = GetBaseAddress(PID)
 
 def search(base,match_val):
     match_val = np.asarray(list(pack('<L',match_val)))
-    print(match_val)
+    #print(match_val)
     chunk_start_adr = base
     indices = []
     a_s= []
 
-    while chunk_start_adr <= base+0x10000 or chunk_start_adr < 0x60000000:
+    while chunk_start_adr <= base+0x10000 or chunk_start_adr < 0xF0000000:
         bytesRead = c_ulong(0)
-        a = np.zeros(0x10000, 'B')     # chunk size; should be even bigger ..
+        a = np.zeros(0x100000, 'B')     # chunk size; should be even bigger ..
         #print (a.itemsize)
         r = ReadProcessMemory(processHandle, c_ulonglong(chunk_start_adr), a.ctypes.data_as(ctypes.POINTER(ctypes.c_ubyte)), a.itemsize * a.size, byref(bytesRead))
         #print (hex(chunk_start_adr),match_val,a)
@@ -78,7 +77,7 @@ def search(base,match_val):
                     try:
                         if((a[n:n+4]==match_val).all()):
                             indices.append((chunk_start_adr+n))
-                            #print(hex(n),len(indices))
+                            #print(hex(chunk_start_adr+n),len(indices))
                         #print (hex(chunk_start_adr),new,a[n-3:n+3],hex(chunk_start_adr + n))
                     except:
                         pass

@@ -1,4 +1,3 @@
-import mem
 import win32api, win32con
 import ctypes, ctypes.wintypes
 import win32ui
@@ -8,21 +7,25 @@ import sys
 import threading
 from key import Key
 import random
+import mem
+import copy
 
-base = mem.BASE
+from tkinter import Tk, Canvas, Frame, BOTH
+
+base = 0xA40000
 base2 = 0x10000000 #mono.dll base
 pos = 0
 tol = .7
 searchrad = 70
-txt = 'test-r.txt'
 txtrep = 'swampcross-rep.txt'
 go = (235,1,'move')
 now = (0,0)
 
-path = []
+refresh = 0
 reppath = []
 gather = False
 key = Key()
+resources = []
 
 rect = win32ui.FindWindow(None,u'Albion Online Client').GetWindowRect()
 x = rect[0]
@@ -41,17 +44,133 @@ rt = (x+w,y+h/2)
 c = (int(x+w/2),int(+h/2))
 r = 150
 
-with open(txt) as f:
-    path = f.readlines()
-path = [x.strip() for x in path]
+want = []
 
 with open(txtrep) as f:
     reppath = f.readlines()
 reppath = [x.strip() for x in reppath]
 
-def main():
-    followPath(path,bankCallback)
+class Example(Frame):
+    def __init__(self):
+        super().__init__()
+        self.tree = {2:'#eee',3:'#f84',4:'#48f',5:'#4df'}
+        self.rare = {0:'#000',1:'#4f4',2:'#45f',3:'#b4f'}
+        self.win = (500,800)
+        self.mult = (.5,.5)
+        self.initUI()
 
+
+
+    def update(self):
+        canvas = self.canvas
+        me = (-round(mem.readMemFloat(base + 0x1042B18,[0])*self.mult[0])+self.win[0],
+              -round(mem.readMemFloat(base + 0x1042B20,[0])*2.0*self.mult[1])+self.win[1])
+        #print (me)
+        canvas.create_rectangle(0, 0, 2000, 1000,fill='#000')
+        canvas.create_rectangle(me[0]-4, me[1]-4, me[0]+4, me[1]+4, fill='#fff')
+        for w in want:
+            try:
+                outline = self.rare[w['rare']]
+                fill = self.tree[w['tier']]
+                new = mem.readMem(w['base']+0xD4,[0])
+                x = round(w['pos'][0]*self.mult[0])+self.win[0]
+                y = round(w['pos'][1]*self.mult[1])+self.win[1]
+                x,y=rotate((self.win[0],self.win[1]),(x,y),-45)
+                x2 = x + 20
+                y2 = y + 20
+                #print(x,y,w)
+                if(new != w['charges']):
+                    w['charges'] = new
+                    fill = "#f00"
+                    outline = '#f00'
+                if(w['rare'] != 0):
+                    canvas.create_rectangle(x, y, x2, y2,
+                        outline=outline, fill='', width=2)
+                canvas.create_text(x+10, y+10, text=w['charges'], fill=fill)
+            except:
+                #print ("Unexpected error:", sys.exc_info()[0])
+                pass
+
+    def initUI(self):
+        self.master.title("Shapes")
+        self.pack(fill=BOTH, expand=1)
+        self.canvas = Canvas(self,background='#000')
+        self.update()
+        self.canvas.pack(fill=BOTH, expand=1)
+
+def main():
+    global base
+    base = mem.BASE
+    #print(hex(base))
+    getnextnode()
+    root = Tk()
+    ex = Example()
+    def update():
+        global refresh
+        ex.update()
+        refresh+=1
+        if(refresh > 60):
+            refresh = 0
+            getnextnode()
+        root.after(500, update)
+    root.after(500, update)
+    root.geometry("2000x1000+0+-1440")
+    root.mainloop()
+    pass
+    #followPath(path,bankCallback)
+
+def rotate(origin, point, angle):
+    angle = math.radians(angle)
+    ox, oy = origin
+    px, py = point
+    qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
+    qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
+    return qx, qy
+
+def getnextnode():
+    treebase = []
+    treebase.append(mem.readMem(base2 + 0x1F65EC,[0,0x40,0x48,0x34,0x14,0x194,0]))
+    print(hex(treebase[0]))
+    for t in treebase:
+        nodes = mem.search(base,t)
+        global want
+        want = []
+        for n in nodes:
+            #print (hex(n))
+            b = copy.deepcopy(n - 0x5c)
+            y = mem.readMemFloat(b+0x78,[0])
+            x = mem.readMemFloat(b+0x7C,[0])
+            charges = mem.readMem(b+0xD4,[0])
+            tier = mem.readMem(b+0xc8,[0])
+            node = mem.readMem(b+0x6c,[0])
+            rare = mem.readMem(b+0xd0,[0])
+            if(not (math.isnan(x) or math.isnan(y)) and tier > 1):
+                x = round(x)
+                y = round(y)
+                doc = {'pos':(x,y),'charges':charges,'node':node,'tier':tier,'base':b, 'rare':rare}
+                want.append(doc)
+                print (doc)
+    #print(len(want),len(nodes))
+    return
+    while 1:
+        me = (mem.readMemFloat(base + 0x1042B18,[0]),mem.readMemFloat(base + 0x1042B20,[0]))
+        closest = (10000,10000)
+        closesti = 0
+        for i in range(len(want)):
+            #print(want[i])
+            want[i]['charges'] = mem.readMem(want[i]['base']+0xD4,[0])
+            if(distance(want[i]['pos'],me) < distance(closest,me)):
+                closesti = i
+                closest = want[i]['pos']
+        sys.stdout.write(str(round(me[0]))+','+str(round(me[1]))+' '+
+                        str(round(want[closesti]['pos'][0]))+','+str(round(want[closesti]['pos'][1]))+' '+
+                        '\r')
+        sleep(1)
+            #print (x,y,charges,tier,node)
+        #doc = {x:x}
+
+def distance(p0, p1):
+    return math.sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2)
 def click(pt):
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,pt[0],pt[1],0,0)
     sleep(.01)
